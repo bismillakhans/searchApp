@@ -2,13 +2,13 @@ from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch 
 from elasticsearch_dsl import Search, Q 
 from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import DocType, Text,Date
+from elasticsearch_dsl import Document, Text,Date
 from . import models
 
 
 connections.create_connection()
 
-class BlogPostIndex(DocType):
+class BlogPostIndex(Document):
     author = Text()
     posted_date = Date()
     title = Text()
@@ -17,7 +17,7 @@ class BlogPostIndex(DocType):
     class Index:
         name = 'blogpost-index'
 
-class CollegeInfoIndex(DocType):
+class CollegeInfoIndex(Document):
 
     college_name = Text()
 
@@ -25,7 +25,7 @@ class CollegeInfoIndex(DocType):
         name = 'college-index'
 
 
-class CollegeCourseIndex(DocType):
+class CollegeCourseIndex(Document):
 
     college_id = Text()
     college_course_name = Text()
@@ -52,19 +52,19 @@ def bulk_indexing():
 
 
 
-def esearch(college_name=""):      
+def esearch(college_course_name=""):      
     client = Elasticsearch()      
-    q = Q("bool", should=[Q("match", college_name=college_name)], minimum_should_match=1)  
-    s = Search(using=client, index="college-index").query(q)[0:20] 
+    q = Q("bool", should=[Q("match", college_course_name=college_course_name)], minimum_should_match=1)  
+    s = Search(using=client, index="course-index").query(q)[0:20] 
     response = s.execute()
-    print('Total %d hits found.' % response.hits.total)     
+    # print('Total %d hits found.' % response.hits.total)     
     search = get_results(response)    
-    return response  
+    return search  
 
 def get_results(response): 
     results = []  
-    for hit in response: 
-        result_tuple = (hit.college_name)    
+    for hit in response:
+        result_tuple = (hit.college_id,hit.college_course_name)    
         results.append(result_tuple)  
     return results
 

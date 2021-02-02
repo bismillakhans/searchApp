@@ -8,16 +8,10 @@ from django.http import HttpResponse
 def search_index(request):
     results = []
     name_term = ""
-    gender_term = ""
-    if request.GET.get('name') and request.GET.get('gender'):
+    if request.GET.get('name') :
         name_term = request.GET['name']
-        gender_term = request.GET['gender']
-    elif request.GET.get('name'):
-        name_term = request.GET['name']
-    elif request.GET.get('gender'):
-        gender_term = request.GET['gender']
-    search_term = name_term or gender_term
-    results = es_call.esearch(firstname = name_term, gender=gender_term)
+    results = es_call.esearch(college_course_name = name_term)
     print(results)
-    context = {'results': results, 'count': len(results), 'search_term':  search_term}
+    # import pdb; pdb.set_trace()
+    context = {'results': results, 'count': len(results), 'search_term':  name_term}
     return render(request,  'index.html',  context)

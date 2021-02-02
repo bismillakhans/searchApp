@@ -9,12 +9,12 @@
     aria-label="Name"
     name = 'name'
     value = "">
-    <input 
+    {% comment %} <input 
     class="form-control mr-sm-2" 
     type="search" placeholder="Gender" 
     aria-label="Gender"
     name = 'gender'
-    value = "">
+    value = ""> {% endcomment %}
     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
   </form>
 </nav>
@@ -28,8 +28,8 @@
 					    <div class="images">
 					        <img src="{% static "img/person_icon.png" %}"hspace=5">{{ mytuple.0 }} 
 							<img src="{% static "img/email_icon.png" %}"hspace="5">{{ mytuple.1 }}
-							<img src="{% static "img/gender_icon.png" %}"hspace="5">{{ mytuple.2 }}
-							<img src="{% static "img/address_icon.png" %}"hspace="5">{{ mytuple.3 }}
+							{% comment %} <img src="{% static "img/gender_icon.png" %}"hspace="5">{{ mytuple.2 }}
+							<img src="{% static "img/address_icon.png" %}"hspace="5">{{ mytuple.3 }} {% endcomment %}
 						</div>
 						<p></p>
 				   {% endfor %}
