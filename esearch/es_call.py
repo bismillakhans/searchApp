@@ -48,24 +48,6 @@ class DisplayDataIndex(Document):
 
 
 
-# def bulk_indexing():
-
-#     BlogPostIndex.init()
-#     es = Elasticsearch()
-#     bulk(client=es, actions=(b.indexing() for b in models.BlogPost.objects.all().iterator()))
-
-# def bulk_indexing():
-#     CollegeInfoIndex.init()
-#     es = Elasticsearch()
-#     bulk(client=es, actions=(b.indexing() for b in models.NewCollegeBasicInfo.objects.all().iterator()))
-
-
-
-# def bulk_indexing():
-#     CollegeInfoIndex.init()
-#     es = Elasticsearch()
-#     bulk(client=es, actions=(b.indexing() for b in models.NewCollegeCourseNewCourseInfo.objects.all()[:20].iterator()))
-
 def data_index():
     r=[]
     cursor=connection.cursor()
