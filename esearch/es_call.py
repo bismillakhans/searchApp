@@ -42,7 +42,7 @@ class DisplayDataIndex(Document):
     city = Text()
 
     class Index:
-        name = 'display-data-index'
+        name = 'final-index'
 
 
 
@@ -69,14 +69,14 @@ class DisplayDataIndex(Document):
 def data_index():
     r=[]
     cursor=connection.cursor()
-    cursor.execute('SELECT new_college_basic_info.id,new_college_basic_info.college_name,new_college_course_new_course_info.college_course_name,new_college_college_cities.city FROM new_college_basic_info JOIN new_college_course_new_course_info ON new_college_basic_info.id = new_college_course_new_course_info.id JOIN new_college_college_cities ON new_college_basic_info.city = new_college_college_cities.id;')
+    cursor.execute('SELECT new_college_basic_info.id,new_college_basic_info.college_name,course_course.short_name,new_college_college_cities.city FROM new_college_basic_info JOIN new_college_course_new_course_info ON new_college_basic_info.id = new_college_course_new_course_info.id JOIN new_college_college_cities ON new_college_basic_info.city = new_college_college_cities.id JOIN course_course ON new_college_course_new_course_info.course_id = course_course.id;')
     results=cursor.fetchall()
     for i in results:
         obj = DisplayDataIndex(
         meta={'id': i[0]},
         college_id=i[0],
-        college_course_name=i[1],
-        college_name=i[2],
+        college_name=i[1],
+        college_course_name=i[2],
         city=i[3]
         )
         h=obj.to_dict(include_meta=True)
@@ -96,7 +96,7 @@ def bulk_indexing():
 def esearch(college_course_name="",city="",term=1):      
     client = Elasticsearch()      
     q = Q("bool", should=[Q("match", college_course_name=college_course_name),Q("match", city=city)], minimum_should_match=term)
-    s = Search(using=client, index="display-data-index").query(q)[0:20] 
+    s = Search(using=client, index="final-index").query(q)[0:20] 
     response = s.execute()
     # print('Total %d hits found.' % response.hits.total)     
     search = get_results(response)    
@@ -105,7 +105,7 @@ def esearch(college_course_name="",city="",term=1):
 def get_results(response): 
     results = []  
     for hit in response:
-        result_tuple = (hit.college_id,hit.college_course_name)    
+        result_tuple = (hit.college_id,hit.college_name)    
         results.append(result_tuple)  
     return results
 
