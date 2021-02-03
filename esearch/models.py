@@ -206,3 +206,6 @@ class NewCollegeStates(models.Model):
     class Meta:
         managed = False
         db_table = 'new_college_states'
+
+
+

@@ -4,6 +4,7 @@ from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import Document, Text,Date
 from . import models
+from django.db import connection
 
 
 connections.create_connection()
@@ -32,6 +33,19 @@ class CollegeCourseIndex(Document):
 
     class Index:
         name = 'course-index'
+        
+class DisplayDataIndex(Document):
+
+    college_id = Text()
+    college_course_name = Text()
+    college_name = Text()
+    city = Text()
+
+    class Index:
+        name = 'display-data-index'
+
+
+
 
 
 # def bulk_indexing():
@@ -45,17 +59,44 @@ class CollegeCourseIndex(Document):
 #     es = Elasticsearch()
 #     bulk(client=es, actions=(b.indexing() for b in models.NewCollegeBasicInfo.objects.all().iterator()))
 
+
+
+# def bulk_indexing():
+#     CollegeInfoIndex.init()
+#     es = Elasticsearch()
+#     bulk(client=es, actions=(b.indexing() for b in models.NewCollegeCourseNewCourseInfo.objects.all()[:20].iterator()))
+
+def data_index():
+    r=[]
+    cursor=connection.cursor()
+    cursor.execute('SELECT new_college_basic_info.id,new_college_basic_info.college_name,new_college_course_new_course_info.college_course_name,new_college_college_cities.city FROM new_college_basic_info JOIN new_college_course_new_course_info ON new_college_basic_info.id = new_college_course_new_course_info.id JOIN new_college_college_cities ON new_college_basic_info.city = new_college_college_cities.id;')
+    results=cursor.fetchall()
+    for i in results:
+        obj = DisplayDataIndex(
+        meta={'id': i[0]},
+        college_id=i[0],
+        college_course_name=i[1],
+        college_name=i[2],
+        city=i[3]
+        )
+        h=obj.to_dict(include_meta=True)
+        r.append(h)
+    return r
+
+
+
 def bulk_indexing():
     CollegeInfoIndex.init()
     es = Elasticsearch()
-    bulk(client=es, actions=(b.indexing() for b in models.NewCollegeCourseNewCourseInfo.objects.all()[:20].iterator()))
+    dataValue=data_index()
+    bulk(client=es, actions=(b for b in dataValue[:100])
 
 
 
-def esearch(college_course_name=""):      
+def esearch(college_course_name="",city="",term=1):      
     client = Elasticsearch()      
-    q = Q("bool", should=[Q("match", college_course_name=college_course_name)], minimum_should_match=1)  
-    s = Search(using=client, index="course-index").query(q)[0:20] 
+    q = Q("bool", should=[Q("match", college_course_name=college_course_name),Q("match", city=city)], minimum_should_match=term)
+    s = Search(using=client, index="display-data-index").query(q)[0:20] 
     response = s.execute()
     # print('Total %d hits found.' % response.hits.total)     
     search = get_results(response)    
