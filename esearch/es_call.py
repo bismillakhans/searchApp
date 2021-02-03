@@ -86,10 +86,10 @@ def data_index():
 
 
 def bulk_indexing():
-    CollegeInfoIndex.init()
+    DisplayDataIndex.init()
     es = Elasticsearch()
     dataValue=data_index()
-    bulk(client=es, actions=(b for b in dataValue[:100])
+    bulk(client=es, actions=(b for b in dataValue[:100]))
 
 
 
